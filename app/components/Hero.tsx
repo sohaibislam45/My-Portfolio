@@ -32,31 +32,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16 px-4 sm:px-6 lg:px-8 bg-dark overflow-hidden">
-      {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Stars Background */}
-        <div 
-          className="absolute inset-0 hidden dark:block opacity-30"
-          style={{
-            backgroundImage: `
-              radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
-              radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
-              radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
-              radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
-              radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0)),
-              radial-gradient(1.5px 1.5px at 160px 120px, #ffffff, rgba(0,0,0,0))
-            `,
-            backgroundRepeat: 'repeat',
-            backgroundSize: '200px 200px',
-          }}
-        />
-        {/* Primary gradient from left */}
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
-        {/* Primary gradient bottom right */}
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />
-      </div>
-
+    <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16 px-4 sm:px-6 lg:px-8 bg-transparent overflow-hidden">
       <div className="relative max-w-7xl mx-auto w-full z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12 min-h-[85vh]">
           {/* Left Content */}
