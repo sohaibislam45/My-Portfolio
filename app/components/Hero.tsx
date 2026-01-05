@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useMotionTemplate } from 'framer-motion';
 import { 
   FaGithub, 
   FaLinkedin, 
@@ -84,6 +84,91 @@ const stats = [
   { label: 'Years', value: 3, suffix: '+' },
   { label: 'Passion', value: 100, suffix: '%' },
 ];
+
+// Magnetic Button Component
+function MagneticButton({ 
+  children, 
+  href, 
+  onClick, 
+  download, 
+  className 
+}: { 
+  children: React.ReactNode; 
+  href: string; 
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  download?: boolean;
+  className: string;
+}) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    setPosition({ x: x * 0.3, y: y * 0.3 });
+  };
+
+  const handleMouseLeave = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const newRipple = { id: Date.now(), x, y };
+    setRipples(prev => [...prev, newRipple]);
+    setTimeout(() => {
+      setRipples(prev => prev.filter(r => r.id !== newRipple.id));
+    }, 600);
+    if (onClick) onClick(e);
+  };
+
+  return (
+    <motion.a
+      ref={ref}
+      href={href}
+      download={download}
+      onClick={handleClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={className}
+      style={{
+        x: position.x,
+        y: position.y,
+      }}
+      whileHover={{ scale: 1.05, y: -2 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
+      {children}
+      {ripples.map(ripple => (
+        <motion.span
+          key={ripple.id}
+          className="absolute rounded-full bg-white/30 pointer-events-none"
+          style={{
+            left: ripple.x,
+            top: ripple.y,
+            width: 0,
+            height: 0,
+          }}
+          animate={{
+            width: 200,
+            height: 200,
+            x: -100,
+            y: -100,
+            opacity: [0.5, 0],
+          }}
+          transition={{ duration: 0.6 }}
+        />
+      ))}
+    </motion.a>
+  );
+}
 
 export default function Hero() {
   const [displayText, setDisplayText] = useState('');
@@ -415,18 +500,56 @@ export default function Hero() {
                   <span className="animate-cursor text-primary">|</span>
                 </motion.h2>
                 
-                {/* Name Section with Gradient */}
+                {/* Name Section with Gradient and Character Reveal */}
                 <h1 className="font-heading text-5xl md:text-7xl font-bold leading-tight">
-                  <span className="bg-gradient-to-r from-primary via-primary-hover to-primary bg-clip-text text-transparent">
-                    Hello, I'm
-                  </span>
+                  <motion.span 
+                    className="bg-gradient-to-r from-primary via-primary-hover to-primary bg-clip-text text-transparent inline-block"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    Hello, I&apos;m
+                  </motion.span>
                   <br />
                   <motion.span 
-                    className="relative bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,220,130,0.5)] inline-block"
+                    className="relative inline-block"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
                   >
-                    {personalInfo.name}
+                    <span className="relative z-10 text-white drop-shadow-[0_0_30px_rgba(0,220,130,0.5)]">
+                      {personalInfo.name.split('').map((char, index) => (
+                        <motion.span
+                          key={`${char}-${index}`}
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            duration: 0.4,
+                            delay: 0.5 + index * 0.04,
+                            ease: [0.6, -0.05, 0.01, 0.99],
+                          }}
+                          className="inline-block"
+                        >
+                          {char === ' ' ? '\u00A0' : char}
+                        </motion.span>
+                      ))}
+                    </span>
+                    {/* Gradient overlay effect */}
+                    <motion.span
+                      className="absolute inset-0 bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent pointer-events-none"
+                      style={{
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.6 }}
+                    >
+                      {personalInfo.name}
+                    </motion.span>
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"
                       animate={{
                         x: ['-100%', '100%', '-100%'],
                       }}
@@ -444,14 +567,27 @@ export default function Hero() {
                 </h1>
               </div>
 
-              {/* Introduction */}
+              {/* Introduction with word-by-word reveal */}
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
                 className="text-gray-400 max-w-lg text-lg leading-relaxed"
               >
-                I turn complex ideas into seamless, high-impact web experiences — building modern, scalable, and lightning-fast applications that make a difference.
+                {`I turn complex ideas into seamless, high-impact web experiences — building modern, scalable, and lightning-fast applications that make a difference.`.split(' ').map((word, index) => (
+                  <motion.span
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: 0.9 + index * 0.03,
+                    }}
+                    className="inline-block mr-1"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
               </motion.p>
 
               {/* Stats Counters */}
@@ -466,22 +602,20 @@ export default function Hero() {
                 ))}
               </motion.div>
 
-              {/* Buttons */}
+              {/* Buttons with Magnetic Effect */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 1.2 }}
                 className="flex flex-wrap gap-4"
               >
-                <motion.a
+                <MagneticButton
                   href="#projects"
                   onClick={(e) => {
                     e.preventDefault();
                     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
                   }}
                   className="group relative bg-gradient-to-r from-primary to-primary-hover text-white px-8 py-3.5 rounded-full font-semibold shadow-[0_0_20px_rgba(0,220,130,0.4)] overflow-hidden"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   <span className="relative z-10">View My Work</span>
                   <motion.div
@@ -490,13 +624,11 @@ export default function Hero() {
                     whileHover={{ x: 0 }}
                     transition={{ duration: 0.3 }}
                   />
-                </motion.a>
-                <motion.a
+                </MagneticButton>
+                <MagneticButton
                   href="/resume.pdf"
                   download
                   className="group relative bg-white text-black px-8 py-3.5 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg border-2 border-transparent overflow-hidden"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   <span className="relative z-10">My Resume</span>
                   <motion.div
@@ -505,19 +637,17 @@ export default function Hero() {
                     whileHover={{ x: 0 }}
                     transition={{ duration: 0.3 }}
                   />
-                </motion.a>
-                <motion.a
+                </MagneticButton>
+                <MagneticButton
                   href="#contact"
                   onClick={(e) => {
                     e.preventDefault();
                     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                   }}
                   className="group relative border-2 border-primary text-primary px-8 py-3.5 rounded-full font-semibold hover:bg-primary/10 transition-colors overflow-hidden"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    Let's Talk
+                    Let&apos;s Talk
                     <motion.span
                       animate={{ x: [0, 5, 0] }}
                       transition={{ duration: 1, repeat: Infinity }}
@@ -525,14 +655,14 @@ export default function Hero() {
                       💬
                     </motion.span>
                   </span>
-                </motion.a>
+                </MagneticButton>
               </motion.div>
 
-              {/* Social Icons */}
+              {/* Social Icons with Enhanced Animations */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 1.4 }}
                 className="flex items-center gap-6 pt-4"
               >
                 {socialLinks.map((social, index) => {
@@ -546,14 +676,44 @@ export default function Hero() {
                       rel="noopener noreferrer"
                       className="text-gray-400 hover:text-primary transition-colors relative group"
                       aria-label={social.name}
-                      whileHover={{ scale: 1.2, rotate: 360 }}
+                      initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1,
+                      }}
+                      transition={{ 
+                        delay: 1.5 + index * 0.1,
+                        type: 'spring',
+                        stiffness: 200,
+                        damping: 15,
+                      }}
+                      whileHover={{ 
+                        scale: 1.3, 
+                        rotate: 360,
+                        y: -5,
+                      }}
                       whileTap={{ scale: 0.9 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.6 + index * 0.1 }}
                     >
-                      <IconComponent size={24} />
-                      <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
+                      <motion.div
+                        className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"
+                        animate={{
+                          scale: [1, 1.5, 1],
+                          opacity: [0, 0.5, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          delay: index * 0.2,
+                        }}
+                      />
+                      <IconComponent size={24} className="relative z-10" />
+                      <motion.span 
+                        className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 h-0.5 bg-primary"
+                        initial={{ width: 0 }}
+                        whileHover={{ width: '100%' }}
+                        transition={{ duration: 0.3 }}
+                      />
                     </motion.a>
                   );
                 })}
@@ -568,52 +728,160 @@ export default function Hero() {
               className="w-full md:w-1/2 flex flex-col justify-center items-center relative gap-8"
               data-parallax
             >
-              {/* Floating Tech Icons */}
-              {topTechSkills.map((skill, index) => {
-                const IconComponent = techIcons[skill.name];
-                if (!IconComponent) return null;
-                
-                const angle = (index / topTechSkills.length) * Math.PI * 2;
-                const radius = 180;
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
+              {/* Connecting Ring - Subtle arc behind image */}
+              <motion.div
+                className="absolute z-5"
+                style={{
+                  left: '50%',
+                  top: '50%',
+                  width: '560px',
+                  height: '560px',
+                  marginLeft: '-280px',
+                  marginTop: '-280px',
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+              >
+                <svg className="w-full h-full" viewBox="0 0 560 560">
+                  <circle
+                    cx="280"
+                    cy="280"
+                    r="270"
+                    fill="none"
+                    stroke="rgba(0, 220, 130, 0.1)"
+                    strokeWidth="1"
+                    strokeDasharray="5, 10"
+                  />
+                </svg>
+              </motion.div>
 
-                return (
-                  <motion.div
-                    key={skill.name}
-                    className="absolute z-20"
-                    style={{
-                      left: '50%',
-                      top: '50%',
-                      willChange: 'transform',
-                      transform: 'translate3d(0, 0, 0)',
-                    }}
-                    animate={{
-                      x: [x, x * 1.1, x],
-                      y: [y, y * 1.1, y],
-                      rotate: [0, 360],
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                      duration: 10 + index * 2,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                      delay: index * 0.5,
-                    }}
-                    whileHover={{ scale: 1.5, zIndex: 30 }}
-                  >
-                    <div className="relative group cursor-pointer">
-                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-md group-hover:blur-xl transition-all" />
-                      <div className="relative bg-dark/80 backdrop-blur-sm p-3 rounded-full border border-primary/30 group-hover:border-primary transition-all">
-                        <IconComponent className="text-primary" size={28} />
-                      </div>
-                      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {/* Tech Icons - Vertical Stack on Left Side */}
+              <motion.div
+                className="absolute -left-7 -top-7 z-8 flex flex-col gap-4 px-4 pt-8"
+                initial={{ opacity: 0, x: -100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                {topTechSkills.map((skill, index) => {
+                  const IconComponent = techIcons[skill.name];
+                  if (!IconComponent) return null;
+
+                  return (
+                    <motion.div
+                      key={skill.name}
+                      className="relative group cursor-pointer"
+                      initial={{ opacity: 0, x: -50, scale: 0.8 }}
+                      animate={{ 
+                        opacity: 1, 
+                        x: 0, 
+                        scale: 1,
+                        // Floating effect - each icon has different timing
+                        y: [
+                          0,
+                          -15 - index * 2,
+                          0,
+                          15 + index * 2,
+                          0,
+                        ],
+                        // Subtle rotation
+                        rotate: [
+                          0,
+                          -2 + (index % 3) * 2,
+                          0,
+                          2 - (index % 3) * 2,
+                          0,
+                        ],
+                      }}
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.7 + index * 0.1,
+                        ease: 'easeOut',
+                        // Floating animation
+                        y: {
+                          duration: 3 + index * 0.3,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                          delay: index * 0.2,
+                        },
+                        rotate: {
+                          duration: 4 + index * 0.4,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                          delay: index * 0.15,
+                        },
+                      }}
+                      whileHover={{ 
+                        scale: 1.3, 
+                        x: 10,
+                        y: 0,
+                        rotate: 0,
+                        zIndex: 20,
+                      }}
+                      style={{
+                        willChange: 'transform, opacity',
+                      }}
+                    >
+                      {/* Pulsing glow effect */}
+                      <motion.div 
+                        className="absolute inset-0 bg-primary/30 rounded-full blur-md group-hover:blur-xl transition-all"
+                        animate={{
+                          opacity: [0.3, 0.6, 0.3],
+                          scale: [1, 1.2, 1],
+                        }}
+                        transition={{
+                          duration: 2 + index * 0.2,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                          delay: index * 0.1,
+                        }}
+                      />
+                      {/* Icon container with border glow */}
+                      <motion.div 
+                        className="relative bg-dark/90 backdrop-blur-sm p-3 rounded-full border-2 border-primary/40 group-hover:border-primary transition-all overflow-hidden"
+                        animate={{
+                          boxShadow: [
+                            '0 0 10px rgba(0,220,130,0.2)',
+                            '0 0 20px rgba(0,220,130,0.4)',
+                            '0 0 10px rgba(0,220,130,0.2)',
+                          ],
+                        }}
+                        transition={{
+                          duration: 2.5,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                          delay: index * 0.15,
+                        }}
+                        whileHover={{
+                          boxShadow: '0 0 30px rgba(0,220,130,0.6)',
+                        }}
+                      >
+                        {/* Shimmer effect on hover */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent"
+                          initial={{ x: '-100%' }}
+                          whileHover={{
+                            x: '100%',
+                            transition: { duration: 0.6 },
+                          }}
+                        />
+                        <IconComponent className="text-primary relative z-10" size={24} />
+                      </motion.div>
+                      {/* Tooltip - appears on right side */}
+                      <motion.div 
+                        className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-dark/90 px-3 py-1.5 rounded border border-primary/30 z-30 pointer-events-none"
+                        initial={{ x: -10, opacity: 0 }}
+                        whileHover={{ x: 0, opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                      >
                         {skill.name}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                        {/* Arrow pointing to icon */}
+                        <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-r-4 border-r-primary/30 border-b-4 border-b-transparent" />
+                      </motion.div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
 
               {/* Glow effect behind image */}
               <div className="absolute w-64 h-64 bg-primary/30 rounded-full filter blur-[80px] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse-glow z-0" />
@@ -700,7 +968,7 @@ export default function Hero() {
   );
 }
 
-// Stat Counter Component
+// Stat Counter Component with Bounce Animation
 function StatCounter({ label, value, suffix, delay }: { label: string; value: number; suffix: string; delay: number }) {
   const [count, setCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -732,11 +1000,35 @@ function StatCounter({ label, value, suffix, delay }: { label: string; value: nu
   }, [value, delay, hasAnimated]);
 
   return (
-    <div className="text-center">
-      <div className="text-3xl font-bold text-primary">
+    <motion.div
+      className="text-center"
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        delay: delay,
+        type: 'spring',
+        stiffness: 200,
+        damping: 15,
+      }}
+      whileHover={{ scale: 1.1 }}
+    >
+      <motion.div
+        className="text-3xl font-bold text-primary"
+        key={count}
+        initial={{ scale: 1.2, y: -10 }}
+        animate={{ scale: 1, y: 0 }}
+        transition={{ duration: 0.3, type: 'spring', stiffness: 300 }}
+      >
         {count}{suffix}
-      </div>
-      <div className="text-xs text-gray-400 mt-1">{label}</div>
-    </div>
+      </motion.div>
+      <motion.div
+        className="text-xs text-gray-400 mt-1"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: delay + 0.3 }}
+      >
+        {label}
+      </motion.div>
+    </motion.div>
   );
 }
