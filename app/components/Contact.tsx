@@ -19,6 +19,7 @@ export default function Contact() {
   });
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +40,17 @@ export default function Contact() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handlePhoneCopy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      await navigator.clipboard.writeText(personalInfo.phone);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy phone number:', err);
+    }
   };
 
   const titleText = 'Get In Touch';
@@ -148,14 +160,15 @@ export default function Contact() {
                   </div>
                 </motion.a>
 
-                <motion.a
-                  href={`tel:${personalInfo.phone.replace(/\s/g, '')}`}
-                  className="flex items-center gap-4 text-gray-300 hover:text-primary transition-colors group relative overflow-hidden rounded-lg p-2"
+                <motion.div
+                  onClick={handlePhoneCopy}
+                  className="flex items-center gap-4 text-gray-300 hover:text-primary transition-colors group relative overflow-hidden rounded-lg p-2 cursor-pointer"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                   whileHover={{ x: 5, scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <motion.div
                     className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-primary transition-colors relative overflow-hidden"
@@ -176,11 +189,23 @@ export default function Contact() {
                     />
                     <FaPhone className="text-primary group-hover:text-white transition-colors relative z-10" />
                   </motion.div>
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm text-gray-400">Phone</p>
                     <p className="font-medium text-white">{personalInfo.phone}</p>
                   </div>
-                </motion.a>
+                  <AnimatePresence>
+                    {copied && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0 }}
+                        className="text-primary text-sm font-medium"
+                      >
+                        Copied!
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
 
                 {personalInfo.whatsapp && (
                   <motion.a

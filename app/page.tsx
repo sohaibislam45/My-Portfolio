@@ -20,16 +20,32 @@ export default function Home() {
 
   // Handle page loading
   useEffect(() => {
+    // Check immediately if page is already loaded
+    if (document.readyState === 'complete') {
+      setPageLoaded(true);
+      return;
+    }
+
+    // If not complete, check readyState changes and listen for load event
+    const handleStateChange = () => {
+      if (document.readyState === 'complete') {
+        setPageLoaded(true);
+      }
+    };
+
     const handleLoad = () => {
       setPageLoaded(true);
     };
 
-    if (document.readyState === 'complete') {
-      setPageLoaded(true);
-    } else {
-      window.addEventListener('load', handleLoad);
-      return () => window.removeEventListener('load', handleLoad);
-    }
+    // Listen for readystatechange to catch when page becomes complete
+    document.addEventListener('readystatechange', handleStateChange);
+    // Also listen for load event as a fallback
+    window.addEventListener('load', handleLoad);
+
+    return () => {
+      document.removeEventListener('readystatechange', handleStateChange);
+      window.removeEventListener('load', handleLoad);
+    };
   }, []);
 
   // Hide loading screen when both page is loaded and animation is complete

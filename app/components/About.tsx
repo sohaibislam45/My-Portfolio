@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FaGraduationCap, FaCode, FaGamepad, FaFootballBall } from 'react-icons/fa';
+import { FaGraduationCap, FaCode, FaGamepad, FaFootballBall, FaUser } from 'react-icons/fa';
 import { aboutContent, education } from '@/data/portfolio';
 
 export default function About() {
@@ -213,8 +213,18 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.5 }}
               whileHover={{ x: 5 }}
+              className="group"
             >
-              <h3 className="text-2xl font-heading font-semibold mb-4 text-white">
+              <h3 className="text-2xl font-heading font-semibold mb-4 text-white flex items-center gap-2">
+                <motion.div
+                  initial={{ rotate: -180, scale: 0 }}
+                  whileInView={{ rotate: 0, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.6, type: 'spring', stiffness: 200 }}
+                  whileHover={{ rotate: 360, scale: 1.2 }}
+                >
+                  <FaUser className="text-primary" />
+                </motion.div>
                 Personality & Goals
               </h3>
               <p className="text-gray-300 leading-relaxed">
@@ -278,125 +288,129 @@ export default function About() {
               </h3>
             </motion.div>
 
-            <div className="space-y-4 relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-              >
-                <h4 className="text-xl font-semibold text-white mb-1">
-                  {education.degree}
-                </h4>
-                <motion.p 
-                  className="text-primary font-medium mb-2"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+            <div className="space-y-6 relative z-10">
+              {education.map((edu, eduIndex) => (
+                <motion.div
+                  key={eduIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
+                  transition={{ duration: 0.6, delay: 0.3 + eduIndex * 0.2 }}
+                  className={eduIndex > 0 ? "pt-6 border-t border-white/10" : ""}
                 >
-                  {education.institution}
-                </motion.p>
-                <motion.p 
-                  className="text-gray-300 mb-1"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                >
-                  {education.location}
-                </motion.p>
-                <motion.p 
-                  className="text-gray-300"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                >
-                  Graduation Year: {education.graduationYear}
-                </motion.p>
-                {education.cgpa && (
+                  <h4 className="text-xl font-semibold text-white mb-1">
+                    {edu.degree}
+                  </h4>
                   <motion.p 
-                    className="text-gray-300 mt-2"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    className="text-primary font-medium mb-2"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.7, type: 'spring' }}
+                    transition={{ duration: 0.5, delay: 0.4 + eduIndex * 0.2 }}
                   >
-                    CGPA: {education.cgpa}
+                    {edu.institution}
                   </motion.p>
-                )}
-              </motion.div>
+                  <motion.p 
+                    className="text-gray-300 mb-1"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.5 + eduIndex * 0.2 }}
+                  >
+                    {edu.location}
+                  </motion.p>
+                  <motion.p 
+                    className="text-gray-300"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.6 + eduIndex * 0.2 }}
+                  >
+                    Graduation Year: {edu.graduationYear}
+                  </motion.p>
+                  {(edu.cgpa || edu.gpa) && (
+                    <motion.p 
+                      className="text-gray-300 mt-2"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.7 + eduIndex * 0.2, type: 'spring' }}
+                    >
+                      {edu.cgpa ? `CGPA: ${edu.cgpa}` : `GPA: ${edu.gpa}`}
+                    </motion.p>
+                  )}
 
-              {education.coursework && education.coursework.length > 0 && (
-                <motion.div
-                  className="mt-6"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                >
-                  <h5 className="font-semibold text-white mb-3">Relevant Coursework:</h5>
-                  <ul className="grid grid-cols-2 gap-2">
-                    {education.coursework.map((course, index) => (
-                      <motion.li
-                        key={index}
-                        className="text-gray-300 flex items-center gap-2"
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: 0.5 + index * 0.05 }}
-                        whileHover={{ x: 5, color: '#00dc82' }}
-                      >
-                        <motion.span
-                          className="w-2 h-2 bg-primary rounded-full"
-                          initial={{ scale: 0 }}
-                          whileInView={{ scale: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.3, delay: 0.6 + index * 0.05, type: 'spring' }}
-                          whileHover={{ scale: 1.5 }}
-                        />
-                        {course}
-                      </motion.li>
-                    ))}
-                  </ul>
-                </motion.div>
-              )}
+                  {edu.coursework && edu.coursework.length > 0 && (
+                    <motion.div
+                      className="mt-6"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.4 + eduIndex * 0.2 }}
+                    >
+                      <h5 className="font-semibold text-white mb-3">Relevant Coursework:</h5>
+                      <ul className="grid grid-cols-2 gap-2">
+                        {edu.coursework.map((course, index) => (
+                          <motion.li
+                            key={index}
+                            className="text-gray-300 flex items-center gap-2"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4, delay: 0.5 + index * 0.05 }}
+                            whileHover={{ x: 5, color: '#00dc82' }}
+                          >
+                            <motion.span
+                              className="w-2 h-2 bg-primary rounded-full"
+                              initial={{ scale: 0 }}
+                              whileInView={{ scale: 1 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.3, delay: 0.6 + index * 0.05, type: 'spring' }}
+                              whileHover={{ scale: 1.5 }}
+                            />
+                            {course}
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  )}
 
-              {education.achievements && education.achievements.length > 0 && (
-                <motion.div
-                  className="mt-6"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
-                >
-                  <h5 className="font-semibold text-white mb-3">Achievements:</h5>
-                  <ul className="space-y-2">
-                    {education.achievements.map((achievement, index) => (
-                      <motion.li
-                        key={index}
-                        className="text-gray-300 flex items-start gap-2"
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
-                        whileHover={{ x: 5, color: '#00dc82' }}
-                      >
-                        <motion.span
-                          className="w-2 h-2 bg-primary rounded-full mt-2"
-                          initial={{ scale: 0 }}
-                          whileInView={{ scale: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.3, delay: 0.7 + index * 0.1, type: 'spring' }}
-                          whileHover={{ scale: 1.5 }}
-                        />
-                        {achievement}
-                      </motion.li>
-                    ))}
-                  </ul>
+                  {edu.achievements && edu.achievements.length > 0 && (
+                    <motion.div
+                      className="mt-6"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.5 + eduIndex * 0.2 }}
+                    >
+                      <h5 className="font-semibold text-white mb-3">Achievements:</h5>
+                      <ul className="space-y-2">
+                        {edu.achievements.map((achievement, index) => (
+                          <motion.li
+                            key={index}
+                            className="text-gray-300 flex items-start gap-2"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
+                            whileHover={{ x: 5, color: '#00dc82' }}
+                          >
+                            <motion.span
+                              className="w-2 h-2 bg-primary rounded-full mt-2"
+                              initial={{ scale: 0 }}
+                              whileInView={{ scale: 1 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.3, delay: 0.7 + index * 0.1, type: 'spring' }}
+                              whileHover={{ scale: 1.5 }}
+                            />
+                            {achievement}
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  )}
                 </motion.div>
-              )}
+              ))}
             </div>
           </motion.div>
         </div>

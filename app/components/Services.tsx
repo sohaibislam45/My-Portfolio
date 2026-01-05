@@ -44,12 +44,12 @@ export default function Services() {
           </span>
           {/* Animated underline that draws */}
           <motion.div
-            className="h-1 bg-primary mt-4"
-            initial={{ width: 0, x: '-50%' }}
+            className="h-1 bg-primary mt-4 mx-auto"
+            initial={{ width: 0 }}
             whileInView={{ width: '250px' }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            style={{ margin: '1rem auto 0', left: '50%' }}
+            style={{ margin: '1rem auto 0' }}
           />
         </motion.h2>
 

@@ -35,6 +35,7 @@ export interface Education {
   location: string;
   graduationYear: string;
   cgpa?: string;
+  gpa?: string;
   coursework?: string[];
   achievements?: string[];
 }

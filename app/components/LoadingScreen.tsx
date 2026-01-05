@@ -10,19 +10,26 @@ interface LoadingScreenProps {
 const welcomeText = ['Welcome', 'to', 'my', 'portfolio'];
 const wordDelay = 0.4; // Delay between words in seconds
 const wordDuration = 0.5; // Duration of each word animation
-const totalAnimationTime = welcomeText.length * wordDelay + wordDuration;
+// Last word starts at (length - 1) * delay and finishes at that time + duration
+const totalAnimationTime = (welcomeText.length - 1) * wordDelay + wordDuration;
 
 export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   // Calculate when all words have finished animating
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let outerTimer: NodeJS.Timeout;
+    let innerTimer: NodeJS.Timeout;
+    
+    outerTimer = setTimeout(() => {
       // Wait a bit after all words appear, then trigger completion
-      setTimeout(() => {
+      innerTimer = setTimeout(() => {
         onComplete();
       }, 500);
     }, totalAnimationTime * 1000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(outerTimer);
+      clearTimeout(innerTimer);
+    };
   }, [onComplete]);
 
   return (

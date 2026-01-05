@@ -31,40 +31,41 @@ export default function Skills() {
   return (
     <section id="skills" className="py-20 px-4 sm:px-6 lg:px-8 bg-transparent relative z-10">
       <div className="max-w-7xl mx-auto">
-        <motion.h2
-          className="text-4xl font-heading font-bold text-center mb-16 text-white overflow-hidden"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <span className="flex justify-center">
+        <h2 className="text-4xl font-heading font-bold text-center mb-16 text-white overflow-hidden relative">
+          <motion.span 
+            className="flex justify-center"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+          >
             {titleText.split('').map((char, index) => (
               <motion.span
                 key={index}
                 className="inline-block"
-                initial={{ opacity: 0, y: 50, rotateX: -90 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
                 transition={{
                   duration: 0.4,
-                  delay: index * 0.05,
+                  delay: 0.3 + index * 0.05,
                   ease: [0.6, -0.05, 0.01, 0.99],
                 }}
               >
                 {char === ' ' ? '\u00A0' : char}
               </motion.span>
             ))}
-          </span>
+          </motion.span>
           {/* Animated underline */}
           <motion.div
-            className="h-1 bg-gradient-to-r from-transparent via-primary to-transparent mt-4"
+            className="h-1 bg-gradient-to-r from-transparent via-primary to-transparent mt-4 mx-auto"
             initial={{ width: 0 }}
             whileInView={{ width: '300px' }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.5 }}
             style={{ margin: '1rem auto 0' }}
           />
-        </motion.h2>
+        </h2>
 
         <div className="grid md:grid-cols-3 gap-8">
           {skillCategories.map((category, categoryIndex) => (

@@ -81,7 +81,7 @@ const techIcons: { [key: string]: any } = {
 // Stats data
 const stats = [
   { label: 'Projects', value: 50, suffix: '+' },
-  { label: 'Years', value: 3, suffix: '+' },
+  { label: 'Skills', value: 10, suffix: '+' },
   { label: 'Passion', value: 100, suffix: '%' },
 ];
 
