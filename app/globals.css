@@ -53,3 +53,72 @@ body {
   background: #00b86b;
 }
 
+/* Smooth animations and performance */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom cursor - only hide on hero section for desktop */
+@media (min-width: 768px) {
+  .hero-section a,
+  .hero-section button {
+    cursor: none;
+  }
+}
+
+/* Performance optimizations */
+.animate-float,
+.animate-pulse-glow,
+.animate-cursor {
+  will-change: transform, opacity;
+}
+
+/* Gradient text animation support */
+@supports (background-clip: text) {
+  .gradient-text {
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+}
+
+/* Smooth transitions for 3D transforms */
+[style*="transform"] {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* GPU Acceleration for Hero Section */
+.hero-section * {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimize animated elements with will-change */
+[data-parallax],
+.animate-float,
+.animate-pulse-glow,
+.particle-optimized {
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Optimize gradient orbs */
+.hero-section [class*="bg-primary/20"],
+.hero-section [class*="bg-gradient-pink/20"],
+.hero-section [class*="bg-gradient-purple/20"] {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Reduce repaints on scroll */
+.hero-section {
+  contain: layout style paint;
+}
+
+/* Optimize tech icons */
+.hero-section [class*="absolute z-20"] {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
