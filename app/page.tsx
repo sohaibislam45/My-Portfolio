@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -11,8 +11,46 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ParticlesBackground from './components/ParticlesBackground';
+import LoadingScreen from './components/LoadingScreen';
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [pageLoaded, setPageLoaded] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
+
+  // Handle page loading
+  useEffect(() => {
+    const handleLoad = () => {
+      setPageLoaded(true);
+    };
+
+    if (document.readyState === 'complete') {
+      setPageLoaded(true);
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, []);
+
+  // Hide loading screen when both page is loaded and animation is complete
+  useEffect(() => {
+    if (pageLoaded && animationComplete) {
+      setIsLoading(false);
+    }
+  }, [pageLoaded, animationComplete]);
+
+  // Prevent scroll while loading - control html instead of body
+  useEffect(() => {
+    if (isLoading) {
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.documentElement.style.overflow = '';
+    }
+    return () => {
+      document.documentElement.style.overflow = '';
+    };
+  }, [isLoading]);
+
   // Smooth scroll enhancement
   useEffect(() => {
     // Enhanced smooth scroll with easing
@@ -42,7 +80,14 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen relative overflow-x-hidden">
+    <>
+      <AnimatePresence mode="wait">
+        {isLoading && (
+          <LoadingScreen onComplete={() => setAnimationComplete(true)} />
+        )}
+      </AnimatePresence>
+
+      <main className="min-h-screen relative overflow-x-hidden">
       {/* Particles Background */}
       <ParticlesBackground />
       
@@ -159,6 +204,7 @@ export default function Home() {
         <Footer />
       </div>
     </main>
+    </>
   );
 }
 

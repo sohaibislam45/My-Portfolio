@@ -12,12 +12,12 @@ export default function Projects() {
 
   const openModal = (projectId: string) => {
     setSelectedProject(projectId);
-    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
     setSelectedProject(null);
-    document.body.style.overflow = 'unset';
+    document.documentElement.style.overflow = '';
   };
 
   const titleText = 'Featured Projects';
