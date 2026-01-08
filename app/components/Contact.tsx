@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaFacebook, FaEnvelope, FaPhone, FaWhatsapp } from 'react-icons/fa';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { personalInfo, socialLinks } from '@/data/portfolio';
 
 const iconMap: Record<string, any> = {
@@ -20,6 +22,7 @@ export default function Contact() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +30,7 @@ export default function Contact() {
     // EmailJS integration or API call would go here
     const mailtoLink = `mailto:${personalInfo.email}?subject=Contact from Portfolio&body=Name: ${formData.name}%0AEmail: ${formData.email}%0A%0AMessage:%0A${formData.message}`;
     window.location.href = mailtoLink;
-    
+
     // Simulate submission delay
     setTimeout(() => {
       setFormData({ name: '', email: '', message: '' });
@@ -53,87 +56,107 @@ export default function Contact() {
     }
   };
 
-  const titleText = 'Get In Touch';
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // Title Animation
+      gsap.to('.contact-title', {
+        scrollTrigger: {
+          trigger: '.contact-title',
+          start: 'top 80%',
+        },
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+      });
+
+      // Underline Animation
+      gsap.to('.contact-underline', {
+        scrollTrigger: {
+          trigger: '.contact-title',
+          start: 'top 80%',
+        },
+        width: '250px',
+        duration: 1.5,
+        delay: 0.5,
+        ease: 'power2.out',
+      });
+
+      // Contact info stagger
+      gsap.fromTo('.contact-info-item',
+        { opacity: 0, x: -30 },
+        {
+          scrollTrigger: {
+            trigger: '.contact-left',
+            start: 'top 75%',
+          },
+          opacity: 1,
+          x: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: 'power2.out',
+        }
+      );
+
+      // Social links stagger
+      gsap.fromTo('.social-link',
+        { opacity: 0, scale: 0, rotate: -180 },
+        {
+          scrollTrigger: {
+            trigger: '.social-links-container',
+            start: 'top 85%',
+          },
+          opacity: 1,
+          scale: 1,
+          rotate: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: 'back.out(1.7)',
+        }
+      );
+
+      // Form inputs stagger
+      gsap.fromTo('.form-item',
+        { opacity: 0, y: 20 },
+        {
+          scrollTrigger: {
+            trigger: '.contact-form',
+            start: 'top 75%',
+          },
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: 'power2.out',
+        }
+      );
+
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-transparent relative z-10">
-      <div className="max-w-7xl mx-auto">
-        <motion.h2
-          className="text-4xl font-heading font-bold text-center mb-16 text-white overflow-hidden"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <span className="flex justify-center">
-            {titleText.split(' ').map((word, wordIndex) => (
-              <motion.span
-                key={wordIndex}
-                className="inline-block mr-2"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.5,
-                  delay: wordIndex * 0.15,
-                  ease: [0.6, -0.05, 0.01, 0.99],
-                }}
-              >
-                {word.split('').map((char, charIndex) => (
-                  <motion.span
-                    key={charIndex}
-                    className="inline-block"
-                    initial={{ opacity: 0, rotateX: -90 }}
-                    whileInView={{ opacity: 1, rotateX: 0 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      duration: 0.3,
-                      delay: wordIndex * 0.15 + charIndex * 0.03,
-                      ease: [0.6, -0.05, 0.01, 0.99],
-                    }}
-                  >
-                    {char}
-                  </motion.span>
-                ))}
-              </motion.span>
-            ))}
-          </span>
-          {/* Animated underline */}
-          <motion.div
-            className="h-1 bg-gradient-to-r from-transparent via-primary to-transparent mt-4"
-            initial={{ width: 0 }}
-            whileInView={{ width: '250px' }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            style={{ margin: '1rem auto 0' }}
-          />
-        </motion.h2>
+      <div className="max-w-7xl mx-auto" ref={containerRef}>
+        <h2 className="text-4xl font-heading font-bold text-center mb-16 text-white overflow-hidden opacity-0 translate-y-10 contact-title">
+          Get In Touch
+          <div className="h-1 bg-gradient-to-r from-transparent via-primary to-transparent mt-4 mx-auto w-0 contact-underline" />
+        </h2>
 
         <div className="grid md:grid-cols-2 gap-12">
           {/* Contact Information */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6 }}
-            className="space-y-8"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <h3 className="text-2xl font-heading font-semibold mb-6 text-white">
+          <div className="space-y-8 contact-left">
+            <div>
+              <h3 className="text-2xl font-heading font-semibold mb-6 text-white contact-info-item opacity-0">
                 Contact Information
               </h3>
               <div className="space-y-4">
                 <motion.a
                   href={`mailto:${personalInfo.email}`}
-                  className="flex items-center gap-4 text-gray-300 hover:text-primary transition-colors group relative overflow-hidden rounded-lg p-2"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="flex items-center gap-4 text-gray-300 hover:text-primary transition-colors group relative overflow-hidden rounded-lg p-2 contact-info-item opacity-0"
                   whileHover={{ x: 5, scale: 1.02 }}
                 >
                   <motion.div
@@ -162,11 +185,7 @@ export default function Contact() {
 
                 <motion.div
                   onClick={handlePhoneCopy}
-                  className="flex items-center gap-4 text-gray-300 hover:text-primary transition-colors group relative overflow-hidden rounded-lg p-2 cursor-pointer"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="flex items-center gap-4 text-gray-300 hover:text-primary transition-colors group relative overflow-hidden rounded-lg p-2 cursor-pointer contact-info-item opacity-0"
                   whileHover={{ x: 5, scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -212,11 +231,7 @@ export default function Contact() {
                     href={`https://wa.me/${personalInfo.whatsapp.replace(/\D/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-4 text-gray-300 hover:text-primary transition-colors group relative overflow-hidden rounded-lg p-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="flex items-center gap-4 text-gray-300 hover:text-primary transition-colors group relative overflow-hidden rounded-lg p-2 contact-info-item opacity-0"
                     whileHover={{ x: 5, scale: 1.02 }}
                   >
                     <motion.div
@@ -245,16 +260,11 @@ export default function Contact() {
                   </motion.a>
                 )}
               </div>
-            </motion.div>
+            </div>
 
             {/* Social Links with orbit animation */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              <h3 className="text-xl font-heading font-semibold mb-4 text-white">
+            <div className="social-links-container">
+              <h3 className="text-xl font-heading font-semibold mb-4 text-white contact-info-item opacity-0">
                 Connect with me
               </h3>
               <div className="flex gap-4">
@@ -268,19 +278,10 @@ export default function Contact() {
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-12 h-12 flex items-center justify-center bg-white/10 rounded-lg text-gray-300 hover:bg-primary hover:text-white transition-all relative overflow-hidden group"
+                      className="w-12 h-12 flex items-center justify-center bg-white/10 rounded-lg text-gray-300 hover:bg-primary hover:text-white transition-all relative overflow-hidden group social-link opacity-0"
                       aria-label={social.name}
-                      initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                      whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ 
-                        duration: 0.5, 
-                        delay: 0.6 + index * 0.1,
-                        type: 'spring',
-                        stiffness: 200
-                      }}
-                      whileHover={{ 
-                        scale: 1.2, 
+                      whileHover={{
+                        scale: 1.2,
                         rotate: 360,
                         y: -5,
                         transition: { duration: 0.5 }
@@ -304,33 +305,19 @@ export default function Contact() {
                   );
                 })}
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Contact Form with enhanced animations */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6 }}
-          >
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <motion.label
+          <div>
+            <form onSubmit={handleSubmit} className="space-y-6 contact-form">
+              <div className="form-item opacity-0">
+                <label
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-300 mb-2"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
                 >
                   Name
-                </motion.label>
+                </label>
                 <motion.input
                   type="text"
                   id="name"
@@ -342,10 +329,6 @@ export default function Contact() {
                   required
                   className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-white placeholder-gray-400 relative"
                   placeholder="Your Name"
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
                   whileFocus={{ scale: 1.02 }}
                 />
                 <AnimatePresence>
@@ -359,24 +342,15 @@ export default function Contact() {
                     />
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
-                <motion.label
+              <div className="form-item opacity-0">
+                <label
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-300 mb-2"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
                 >
                   Email
-                </motion.label>
+                </label>
                 <motion.input
                   type="email"
                   id="email"
@@ -388,10 +362,6 @@ export default function Contact() {
                   required
                   className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-white placeholder-gray-400"
                   placeholder="your.email@example.com"
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
                   whileFocus={{ scale: 1.02 }}
                 />
                 <AnimatePresence>
@@ -405,24 +375,15 @@ export default function Contact() {
                     />
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <motion.label
+              <div className="form-item opacity-0">
+                <label
                   htmlFor="message"
                   className="block text-sm font-medium text-gray-300 mb-2"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
                 >
                   Message
-                </motion.label>
+                </label>
                 <motion.textarea
                   id="message"
                   name="message"
@@ -434,10 +395,6 @@ export default function Contact() {
                   rows={6}
                   className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none text-white placeholder-gray-400"
                   placeholder="Your message here..."
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
                   whileFocus={{ scale: 1.02 }}
                 />
                 <AnimatePresence>
@@ -451,16 +408,12 @@ export default function Contact() {
                     />
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
 
               <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full px-6 py-3 bg-primary text-white rounded-lg font-medium shadow-lg relative overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.7 }}
+                className="w-full px-6 py-3 bg-primary text-white rounded-lg font-medium shadow-lg relative overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed form-item opacity-0"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -500,7 +453,7 @@ export default function Contact() {
                 />
               </motion.button>
             </form>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

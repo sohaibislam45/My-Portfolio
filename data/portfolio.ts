@@ -27,7 +27,7 @@ export const socialLinks: SocialLink[] = [
 ];
 
 export const aboutContent = {
-  introduction: "Hello! I'm Sohaib Islam, an aspiring full stack developer who enjoys turning ideas into real and useful websites",
+  introduction: "Hello! I'm Shohaib Islam, an aspiring full stack developer who enjoys turning ideas into real and useful websites",
   
   programmingJourney: "I started learning programming out of curiosity about how websites work. Over time, I practiced regularly, built real projects, and learned modern web technologies. This journey helped me improve my problem-solving skills and grow as a developer",
   
@@ -44,7 +44,7 @@ export const education: Education[] = [
     institution: 'IUBAT',
     location: 'Uttara sector 10, Dhaka',
     graduationYear: '2024',
-    cgpa: '3.69',
+    cgpa: '3.69 (Current)',
     coursework: [
       'Web Development',
       'Data Structures',
@@ -59,7 +59,7 @@ export const education: Education[] = [
     degree: 'HSC',
     institution: 'Sherwood International Public School and College',
     location: 'Sherpur, Bogura',
-    graduationYear: '2019',
+    graduationYear: '2020',
     gpa: '5.00',
   },
 ];
@@ -112,13 +112,13 @@ export const services: Service[] = [
 export const projects: Project[] = [
   {
     id: '1',
-    name: 'BookHub - Library Management System',
-    description: 'A comprehensive full-stack web application for managing library books, user accounts, and book lending operations with an intuitive admin dashboard. The system provides seamless book inventory management, user authentication, and automated lending workflows.',
-    briefDescription: 'A full-stack web application for managing library books, user accounts, and book lending operations with an intuitive admin dashboard.',
-    image: '/images/projects/bookhub.jpg',
-    techStack: ['React', 'Node.js', 'Express.js', 'MongoDB', 'Tailwind CSS'],
-    liveLink: 'https://bookhub-demo.com',
-    githubLink: 'https://github.com/shohaibislam/bookhub',
+    name: 'BookFlix - Online Library Management System',
+    description: 'BookFlix is a modern, full-stack library management system that digitizes the traditional library experience.',
+    briefDescription: 'It enables libraries to manage their collections, members, and operations entirely online while providing members with a seamless experience to browse, reserve, borrow books, and manage their accounts. The platform features role-based access control for members, librarians, and administrators, automated fine calculations, subscription management, and real-time notifications',
+    image: '/images/projects/bookflix.png',
+    techStack: ['React', 'Next.js', 'Node.js', 'MongoDB', 'Tailwind CSS'],
+    liveLink: 'https://bookfiix.vercel.app/',
+    githubLink: 'https://github.com/sohaibislam45/BookFlix',
     challenges: [
       'Managing complex state for book inventory',
       'Implementing secure user authentication',
@@ -133,13 +133,13 @@ export const projects: Project[] = [
   },
   {
     id: '2',
-    name: 'EventFlow - Membership & Event Manager',
-    description: 'A comprehensive platform for managing memberships, organizing events, and tracking attendance with real-time updates and notifications. The system enables organizations to efficiently handle member registrations, event planning, and communication.',
-    briefDescription: 'A comprehensive platform for managing memberships, organizing events, and tracking attendance with real-time updates and notifications.',
-    image: '/images/projects/eventflow.jpg',
-    techStack: ['Next.js', 'TypeScript', 'Firebase', 'Material-UI', 'Stripe API'],
-    liveLink: 'https://eventflow-demo.com',
-    githubLink: 'https://github.com/shohaibislam/eventflow',
+    name: 'ClubSphere - community management platform',
+    description: 'ClubSphere is a comprehensive community management platform that enables users to discover, join, and manage clubs and events.',
+    briefDescription: 'The platform supports three distinct user roles—Administrators, Club Managers, and Members—each with tailored features and dashboards.',
+    image: '/images/projects/clubsphere.png',
+    techStack: ['React', 'JavaScript', 'Node.js', 'MongoDB', 'Express.js', 'Firebase', 'Sweetalert2', 'Stripe API'],
+    liveLink: 'https://clubsphere-c7f59.web.app',
+    githubLink: 'https://github.com/sohaibislam45/ClubSphere-frontend',
     challenges: [
       'Real-time data synchronization',
       'Payment integration for membership fees',

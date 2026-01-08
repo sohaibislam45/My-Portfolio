@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import Image from 'next/image';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { projects } from '@/data/portfolio';
 import ProjectModal from './ProjectModal';
 
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const openModal = (projectId: string) => {
     setSelectedProject(projectId);
@@ -22,16 +25,60 @@ export default function Projects() {
 
   const titleText = 'Featured Projects';
 
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // Title Animation
+      gsap.to('.projects-title', {
+        scrollTrigger: {
+          trigger: '.projects-title',
+          start: 'top 80%',
+        },
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+      });
+
+      // Underline Animation
+      gsap.to('.projects-underline', {
+        scrollTrigger: {
+          trigger: '.projects-title',
+          start: 'top 80%',
+        },
+        width: '300px',
+        duration: 1.5,
+        delay: 0.5,
+        ease: 'power2.out',
+      });
+
+      // Projects card stagger animation
+      gsap.fromTo('.project-card',
+        { opacity: 0, y: 100 },
+        {
+          scrollTrigger: {
+            trigger: '.projects-grid',
+            start: 'top 75%',
+          },
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.2,
+          ease: 'power4.out',
+        }
+      );
+
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <>
       <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8 bg-transparent relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <motion.h2
-            className="text-4xl font-heading font-bold text-center mb-16 text-white overflow-hidden"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
+        <div className="max-w-7xl mx-auto" ref={containerRef}>
+          <h2 className="text-4xl font-heading font-bold text-center mb-16 text-white overflow-hidden opacity-0 translate-y-10 projects-title">
             <span className="flex justify-center">
               {titleText.split(' ').map((word, wordIndex) => (
                 <motion.span
@@ -66,35 +113,19 @@ export default function Projects() {
               ))}
             </span>
             {/* Gradient underline */}
-            <motion.div
-              className="h-1 bg-gradient-to-r from-transparent via-primary to-transparent mt-4"
-              initial={{ width: 0 }}
-              whileInView={{ width: '300px' }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              style={{ margin: '1rem auto 0' }}
-            />
-          </motion.h2>
+            <div className="h-1 bg-gradient-to-r from-transparent via-primary to-transparent mt-4 mx-auto w-0 projects-underline" />
+          </h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 projects-grid">
             {projects.map((project, index) => {
               const isHovered = hoveredIndex === index;
-              
+
               return (
                 <motion.div
                   key={project.id}
-                  initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ 
-                    duration: 0.6, 
-                    delay: index * 0.1,
-                    type: 'spring',
-                    stiffness: 100
-                  }}
                   onHoverStart={() => setHoveredIndex(index)}
                   onHoverEnd={() => setHoveredIndex(null)}
-                  whileHover={{ 
+                  whileHover={{
                     y: -10,
                     rotateY: 5,
                     rotateX: 2,
@@ -102,7 +133,7 @@ export default function Projects() {
                     transition: { duration: 0.3 }
                   }}
                   style={{ perspective: 1000, transformStyle: 'preserve-3d' }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg relative group cursor-pointer"
+                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg relative group cursor-pointer project-card"
                 >
                   {/* Animated gradient overlay */}
                   <motion.div
@@ -111,9 +142,9 @@ export default function Projects() {
                     whileHover={{ scale: 1.5, rotate: 180 }}
                     transition={{ duration: 1 }}
                   />
-                  
+
                   {/* Image with parallax and zoom effect */}
-                  <motion.div 
+                  <motion.div
                     className="relative h-48 w-full overflow-hidden"
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.5 }}
@@ -131,49 +162,31 @@ export default function Projects() {
                       className="absolute inset-0 bg-dark/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
                   </motion.div>
-                  
+
                   <div className="p-6 relative z-10">
-                    <motion.h3
-                      className="text-xl font-heading font-semibold mb-2 text-white"
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 + 0.2 }}
-                    >
+                    <h3 className="text-xl font-heading font-semibold mb-2 text-white">
                       {project.name}
-                    </motion.h3>
-                    <motion.p
-                      className="text-gray-300 text-sm mb-4 line-clamp-2"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
-                    >
+                    </h3>
+                    <p className="text-gray-300 text-sm mb-4 line-clamp-2">
                       {project.briefDescription}
-                    </motion.p>
-                    
+                    </p>
+
                     {/* Tech stack with cascade animation */}
-                    <motion.div
-                      className="flex flex-wrap gap-2 mb-4"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
-                    >
+                    <div className="flex flex-wrap gap-2 mb-4">
                       {project.techStack.slice(0, 4).map((tech, techIndex) => (
                         <motion.span
                           key={tech}
                           initial={{ opacity: 0, scale: 0, y: 10 }}
                           whileInView={{ opacity: 1, scale: 1, y: 0 }}
                           viewport={{ once: true }}
-                          transition={{ 
-                            duration: 0.3, 
+                          transition={{
+                            duration: 0.3,
                             delay: index * 0.1 + 0.5 + techIndex * 0.05,
                             type: 'spring',
                             stiffness: 200
                           }}
-                          whileHover={{ 
-                            scale: 1.1, 
+                          whileHover={{
+                            scale: 1.1,
                             y: -2,
                             transition: { duration: 0.2 }
                           }}
@@ -182,16 +195,12 @@ export default function Projects() {
                           {tech}
                         </motion.span>
                       ))}
-                    </motion.div>
-                    
+                    </div>
+
                     {/* Button with slide-in underline */}
                     <motion.button
                       onClick={() => openModal(project.id)}
                       className="w-full px-4 py-2 bg-primary text-white rounded-lg font-medium relative overflow-hidden group/btn"
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 + 0.6 }}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >

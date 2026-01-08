@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaFacebook, FaArrowUp } from 'react-icons/fa';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { socialLinks } from '@/data/portfolio';
 
 const iconMap: Record<string, any> = {
@@ -14,22 +16,47 @@ const iconMap: Record<string, any> = {
 export default function Footer() {
   const [isVisible, setIsVisible] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const footerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      
+
       // Show footer when scrolled past 80% of page
       setIsVisible(scrollPosition > documentHeight * 0.8);
-      
+
       // Show back to top button when scrolled down
       setShowBackToTop(scrollPosition > 300);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    if (footerRef.current) {
+      const ctx = gsap.context(() => {
+        gsap.fromTo('.footer-content',
+          { opacity: 0, y: 30 },
+          {
+            scrollTrigger: {
+              trigger: footerRef.current,
+              start: 'top 95%',
+            },
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power2.out'
+          }
+        );
+      }, footerRef);
+      return () => ctx.revert();
+    }
   }, []);
 
   const scrollToTop = () => {
@@ -73,10 +100,8 @@ export default function Footer() {
         )}
       </AnimatePresence>
 
-      <motion.footer
-        initial={{ opacity: 0, y: 50 }}
-        animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-        transition={{ duration: 0.6 }}
+      <footer
+        ref={footerRef}
         className="bg-gray-900 text-gray-300 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
       >
         {/* Animated gradient background */}
@@ -91,28 +116,18 @@ export default function Footer() {
             ease: 'linear',
           }}
         />
-        
+
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             {/* Copyright with fade-in */}
-            <motion.div
-              className="text-center md:text-left"
-              initial={{ opacity: 0, x: -20 }}
-              animate={isVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
+            <div className="text-center md:text-left footer-content opacity-0">
               <p className="text-sm">
                 © 2024 Shohaib Islam. All Rights Reserved.
               </p>
-            </motion.div>
+            </div>
 
             {/* Social Links with enhanced animations */}
-            <motion.div
-              className="flex gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
+            <div className="flex gap-4 footer-content opacity-0">
               {socialLinks.map((social, index) => {
                 const IconComponent = iconMap[social.icon];
                 if (!IconComponent) return null;
@@ -125,16 +140,8 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full hover:bg-primary transition-colors relative overflow-hidden group"
                     aria-label={social.name}
-                    initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                    animate={isVisible ? { opacity: 1, scale: 1, rotate: 0 } : { opacity: 0, scale: 0, rotate: -180 }}
-                    transition={{ 
-                      duration: 0.5, 
-                      delay: 0.4 + index * 0.1,
-                      type: 'spring',
-                      stiffness: 200
-                    }}
-                    whileHover={{ 
-                      scale: 1.2, 
+                    whileHover={{
+                      scale: 1.2,
                       rotate: 360,
                       y: -5,
                       transition: { duration: 0.5 }
@@ -157,16 +164,13 @@ export default function Footer() {
                   </motion.a>
                 );
               })}
-            </motion.div>
+            </div>
 
             {/* Back to Top Button (desktop only, mobile uses floating button) */}
             <motion.button
               onClick={scrollToTop}
-              className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-primary rounded-lg transition-colors text-sm font-medium relative overflow-hidden group"
+              className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-primary rounded-lg transition-colors text-sm font-medium relative overflow-hidden group footer-content opacity-0"
               aria-label="Back to top"
-              initial={{ opacity: 0, x: 20 }}
-              animate={isVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
               whileHover={{ scale: 1.05, x: 5 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -188,7 +192,7 @@ export default function Footer() {
             </motion.button>
           </div>
         </div>
-      </motion.footer>
+      </footer>
     </>
   );
 }

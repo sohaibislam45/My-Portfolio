@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, useMotionValue, useSpring, useMotionTemplate } from 'framer-motion';
-import { 
-  FaGithub, 
-  FaLinkedin, 
+import {
+  FaGithub,
+  FaLinkedin,
   FaTwitter,
   FaReact,
   FaNode,
@@ -13,7 +13,7 @@ import {
   FaAws,
   FaDocker,
 } from 'react-icons/fa';
-import { 
+import {
   SiTypescript as SiTS,
   SiNextdotjs as SiNext,
   SiMongodb as SiMongo,
@@ -22,6 +22,7 @@ import {
   SiTailwindcss,
   SiExpress,
 } from 'react-icons/si';
+import gsap from 'gsap';
 import { personalInfo, socialLinks, skills } from '@/data/portfolio';
 
 // Typewriter texts to cycle through
@@ -80,21 +81,21 @@ const techIcons: { [key: string]: any } = {
 
 // Stats data
 const stats = [
-  { label: 'Projects', value: 50, suffix: '+' },
-  { label: 'Skills', value: 10, suffix: '+' },
-  { label: 'Passion', value: 100, suffix: '%' },
+  { label: 'Big Projects', value: 5, suffix: '+' },
+  { label: 'Tech Skills', value: 10, suffix: '+' },
+  { label: 'Learning Mindset', value: 100, suffix: '%' },
 ];
 
 // Magnetic Button Component
-function MagneticButton({ 
-  children, 
-  href, 
-  onClick, 
-  download, 
-  className 
-}: { 
-  children: React.ReactNode; 
-  href: string; 
+function MagneticButton({
+  children,
+  href,
+  onClick,
+  download,
+  className
+}: {
+  children: React.ReactNode;
+  href: string;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
   download?: boolean;
   className: string;
@@ -181,9 +182,9 @@ export default function Hero() {
   const [codeDisplay, setCodeDisplay] = useState('');
   const [codeCharIndex, setCodeCharIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const imageRef = useRef<HTMLDivElement>(null);
+
   const sectionRef = useRef<HTMLElement>(null);
-  
+
   // Use Framer Motion's optimized motion values for cursor
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -193,7 +194,7 @@ export default function Hero() {
   // Enhanced Typewriter effect with backspace
   useEffect(() => {
     const currentText = typewriterTexts[currentTextIndex];
-    
+
     if (isTyping && !isDeleting) {
       // Typing phase
       if (currentCharIndex < currentText.length) {
@@ -262,13 +263,13 @@ export default function Hero() {
   // Mouse tracking for 3D tilt and custom cursor - Optimized with requestAnimationFrame
   useEffect(() => {
     if (isMobile) return;
-    
+
     let rafId: number;
-    
+
     const handleMouseMove = (e: MouseEvent) => {
       // Cancel previous frame
       if (rafId) cancelAnimationFrame(rafId);
-      
+
       rafId = requestAnimationFrame(() => {
         // Update motion values (optimized, no re-renders)
         mouseX.set(e.clientX);
@@ -276,17 +277,7 @@ export default function Hero() {
         cursorX.set(e.clientX);
         cursorY.set(e.clientY);
 
-        // 3D tilt effect on image
-        if (imageRef.current) {
-          const rect = imageRef.current.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-          const rotateX = (e.clientY - centerY) / 25;
-          const rotateY = (centerX - e.clientX) / 25;
-          
-          imageRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
-          imageRef.current.style.willChange = 'transform';
-        }
+
       });
     };
 
@@ -301,7 +292,7 @@ export default function Hero() {
   useEffect(() => {
     let rafId: number;
     let ticking = false;
-    
+
     const handleScroll = () => {
       if (!ticking) {
         rafId = requestAnimationFrame(() => {
@@ -383,14 +374,14 @@ export default function Hero() {
         </>
       )}
 
-      <section 
+      <section
         ref={sectionRef}
         className="hero-section relative min-h-screen flex items-center justify-center pt-20 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden"
       >
         {/* Animated Gradient Background */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-dark via-[#0a0a0a] to-dark" />
-          
+
           {/* Animated gradient orbs - Optimized with will-change */}
           <motion.div
             className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full filter blur-[100px]"
@@ -444,13 +435,13 @@ export default function Hero() {
             }}
           />
 
-          {/* Floating particles - Reduced to 10 for better performance */}
-          {[...Array(10)].map((_, i) => {
+          {/* Floating particles - Reduced for performance */}
+          {[...Array(15)].map((_, i) => {
             const randomLeft = Math.random() * 100;
             const randomTop = Math.random() * 100;
             const randomDuration = 3 + Math.random() * 2;
             const randomDelay = Math.random() * 2;
-            
+
             return (
               <motion.div
                 key={i}
@@ -488,7 +479,7 @@ export default function Hero() {
             >
               {/* Designation with Typewriter */}
               <div>
-                <motion.h2 
+                <motion.h2
                   className="text-xl md:text-2xl font-medium mb-2 text-gray-300"
                   key={currentTextIndex}
                   initial={{ opacity: 0, y: 20 }}
@@ -499,10 +490,10 @@ export default function Hero() {
                   {displayText}
                   <span className="animate-cursor text-primary">|</span>
                 </motion.h2>
-                
+
                 {/* Name Section with Gradient and Character Reveal */}
                 <h1 className="font-heading text-5xl md:text-7xl font-bold leading-tight">
-                  <motion.span 
+                  <motion.span
                     className="bg-gradient-to-r from-primary via-primary-hover to-primary bg-clip-text text-transparent inline-block"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -511,7 +502,7 @@ export default function Hero() {
                     Hello, I&apos;m
                   </motion.span>
                   <br />
-                  <motion.span 
+                  <motion.span
                     className="relative inline-block"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -667,7 +658,7 @@ export default function Hero() {
               >
                 {socialLinks.map((social, index) => {
                   const IconComponent = getSocialIcon(social.name);
-                  
+
                   return (
                     <motion.a
                       key={social.name}
@@ -677,19 +668,19 @@ export default function Hero() {
                       className="text-gray-400 hover:text-primary transition-colors relative group"
                       aria-label={social.name}
                       initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                      animate={{ 
-                        opacity: 1, 
-                        y: 0, 
+                      animate={{
+                        opacity: 1,
+                        y: 0,
                         scale: 1,
                       }}
-                      transition={{ 
+                      transition={{
                         delay: 1.5 + index * 0.1,
                         type: 'spring',
                         stiffness: 200,
                         damping: 15,
                       }}
-                      whileHover={{ 
-                        scale: 1.3, 
+                      whileHover={{
+                        scale: 1.3,
                         rotate: 360,
                         y: -5,
                       }}
@@ -708,7 +699,7 @@ export default function Hero() {
                         }}
                       />
                       <IconComponent size={24} className="relative z-10" />
-                      <motion.span 
+                      <motion.span
                         className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 h-0.5 bg-primary"
                         initial={{ width: 0 }}
                         whileHover={{ width: '100%' }}
@@ -772,9 +763,9 @@ export default function Hero() {
                       key={skill.name}
                       className="relative group cursor-pointer"
                       initial={{ opacity: 0, x: -50, scale: 0.8 }}
-                      animate={{ 
-                        opacity: 1, 
-                        x: 0, 
+                      animate={{
+                        opacity: 1,
+                        x: 0,
                         scale: 1,
                         // Floating effect - each icon has different timing
                         y: [
@@ -811,8 +802,8 @@ export default function Hero() {
                           delay: index * 0.15,
                         },
                       }}
-                      whileHover={{ 
-                        scale: 1.3, 
+                      whileHover={{
+                        scale: 1.3,
                         x: 10,
                         y: 0,
                         rotate: 0,
@@ -823,7 +814,7 @@ export default function Hero() {
                       }}
                     >
                       {/* Pulsing glow effect */}
-                      <motion.div 
+                      <motion.div
                         className="absolute inset-0 bg-primary/30 rounded-full blur-md group-hover:blur-xl transition-all"
                         animate={{
                           opacity: [0.3, 0.6, 0.3],
@@ -837,7 +828,7 @@ export default function Hero() {
                         }}
                       />
                       {/* Icon container with border glow */}
-                      <motion.div 
+                      <motion.div
                         className="relative bg-dark/90 backdrop-blur-sm p-3 rounded-full border-2 border-primary/40 group-hover:border-primary transition-all overflow-hidden"
                         animate={{
                           boxShadow: [
@@ -868,7 +859,7 @@ export default function Hero() {
                         <IconComponent className="text-primary relative z-10" size={24} />
                       </motion.div>
                       {/* Tooltip - appears on right side */}
-                      <motion.div 
+                      <motion.div
                         className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-dark/90 px-3 py-1.5 rounded border border-primary/30 z-30 pointer-events-none"
                         initial={{ x: -10, opacity: 0 }}
                         whileHover={{ x: 0, opacity: 1 }}
@@ -885,16 +876,10 @@ export default function Hero() {
 
               {/* Glow effect behind image */}
               <div className="absolute w-64 h-64 bg-primary/30 rounded-full filter blur-[80px] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse-glow z-0" />
-              
+
               {/* Image container with 3D tilt */}
-              <div 
-                ref={imageRef}
-                className="relative z-10 transition-transform duration-300 ease-out"
-                style={{ 
-                  transformStyle: 'preserve-3d',
-                  willChange: 'transform',
-                  backfaceVisibility: 'hidden',
-                }}
+              <div
+                className="relative z-10"
               >
                 <div className="relative w-80 md:w-[500px] h-auto">
                   <Image
@@ -927,13 +912,44 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Code Terminal Window */}
+              {/* Code Terminal Window - Repositioned to bottom-right overlay */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
-                className="relative z-10 w-full max-w-md bg-dark/90 backdrop-blur-sm border border-primary/30 rounded-lg overflow-hidden shadow-2xl"
+                className="absolute -bottom-6 -right-6 z-20 w-full max-w-xs bg-dark/90 backdrop-blur-sm border border-primary/30 rounded-lg overflow-hidden shadow-2xl"
                 data-parallax
+                ref={(el) => {
+                  if (el) {
+                    const ctx = gsap.context(() => {
+                      // Entrance animation
+                      gsap.from(el, {
+                        y: 50,
+                        opacity: 0,
+                        scale: 0.5,
+                        duration: 1,
+                        ease: 'back.out(1.7)',
+                        delay: 1,
+                      });
+
+                      // Scroll-based animation: Fade out
+                      gsap.to(el, {
+                        scrollTrigger: {
+                          trigger: sectionRef.current,
+                          start: 'top top',
+                          end: 'bottom 40%',
+                          scrub: 1,
+                        },
+                        opacity: 0,
+                        scale: 0.8,
+                        y: 50, // Move down slightly when fading
+                        ease: 'power1.out',
+                      });
+                    });
+
+                    return () => ctx.revert();
+                  }
+                }}
               >
                 {/* Terminal Header */}
                 <div className="flex items-center gap-2 px-4 py-2 bg-dark/50 border-b border-primary/20">
@@ -944,9 +960,9 @@ export default function Hero() {
                   </div>
                   <span className="text-xs text-gray-400 ml-2">terminal</span>
                 </div>
-                
+
                 {/* Terminal Content */}
-                <div className="p-4 font-mono text-sm">
+                <div className="p-3 font-mono text-xs">
                   <div className="text-primary mb-2">
                     <span className="text-green-400">$</span> code
                   </div>
@@ -968,36 +984,22 @@ export default function Hero() {
   );
 }
 
-// Stat Counter Component with Bounce Animation
+// Stat Counter Component with GSAP
 function StatCounter({ label, value, suffix, delay }: { label: string; value: number; suffix: string; delay: number }) {
   const [count, setCount] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
-    if (hasAnimated) return;
-    
-    const timer = setTimeout(() => {
-      const duration = 2000;
-      const steps = 60;
-      const increment = value / steps;
-      let current = 0;
-      
-      const interval = setInterval(() => {
-        current += increment;
-        if (current >= value) {
-          setCount(value);
-          clearInterval(interval);
-          setHasAnimated(true);
-        } else {
-          setCount(Math.floor(current));
-        }
-      }, duration / steps);
-      
-      return () => clearInterval(interval);
-    }, delay * 1000);
-
-    return () => clearTimeout(timer);
-  }, [value, delay, hasAnimated]);
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: value,
+      duration: 2,
+      delay: delay,
+      ease: 'power2.out',
+      onUpdate: () => {
+        setCount(Math.ceil(obj.val));
+      }
+    });
+  }, [value, delay]);
 
   return (
     <motion.div
@@ -1012,15 +1014,10 @@ function StatCounter({ label, value, suffix, delay }: { label: string; value: nu
       }}
       whileHover={{ scale: 1.1 }}
     >
-      <motion.div
-        className="text-3xl font-bold text-primary"
-        key={count}
-        initial={{ scale: 1.2, y: -10 }}
-        animate={{ scale: 1, y: 0 }}
-        transition={{ duration: 0.3, type: 'spring', stiffness: 300 }}
-      >
-        {count}{suffix}
-      </motion.div>
+      <div className="flex items-center justify-center text-3xl font-bold text-primary">
+        <span>{count}</span>
+        <span>{suffix}</span>
+      </div>
       <motion.div
         className="text-xs text-gray-400 mt-1"
         initial={{ opacity: 0 }}
