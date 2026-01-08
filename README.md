@@ -122,13 +122,6 @@ This portfolio is data-driven. You can customize most of the content without tou
 4.  **Styling**:
     *   Modify `tailwind.config.ts` to change the primary, secondary, and accent colors to match your brand.
 
-## Roadmap
-
-- [ ] Add Dark/Light mode toggle
-- [ ] Integration with a CMS (Sanity or Strapi)
-- [ ] Blog section with Markdown support
-- [ ] Unit testing with Jest
-- [ ] E2E testing with Cypress
 
 ## Contributing
 
