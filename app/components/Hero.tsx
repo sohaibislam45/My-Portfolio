@@ -288,23 +288,34 @@ export default function Hero() {
     };
   }, [isMobile, mouseX, mouseY, cursorX, cursorY]);
 
-  // Parallax scroll effect - Optimized with requestAnimationFrame and throttling
+  // Parallax scroll effect - Optimized with cached elements and rAF
   useEffect(() => {
     let rafId: number;
     let ticking = false;
+    const parallaxElements = sectionRef.current?.querySelectorAll('[data-parallax]');
+
+    // Initialize will-change once to avoid layout thrashing
+    parallaxElements?.forEach((el) => {
+      (el as HTMLElement).style.willChange = 'transform';
+    });
 
     const handleScroll = () => {
       if (!ticking) {
         rafId = requestAnimationFrame(() => {
-          if (sectionRef.current) {
-            const scrolled = window.scrollY;
-            const parallaxElements = sectionRef.current.querySelectorAll('[data-parallax]');
+          const scrolled = window.scrollY;
+          if (parallaxElements) {
             parallaxElements.forEach((el, index) => {
-              const speed = 0.5 + index * 0.1;
+              const speed = 0.3 + index * 0.05;
               (el as HTMLElement).style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
-              (el as HTMLElement).style.willChange = 'transform';
             });
           }
+          
+          // Fade out hero content as user scrolls down
+          if (sectionRef.current) {
+            const opacity = Math.max(0, 1 - scrolled / 700);
+            (sectionRef.current as HTMLElement).style.opacity = opacity.toString();
+          }
+          
           ticking = false;
         });
         ticking = true;
@@ -382,17 +393,17 @@ export default function Hero() {
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-dark via-[#0a0a0a] to-dark" />
 
-          {/* Animated gradient orbs - Optimized with will-change */}
+          {/* Animated gradient orbs - Optimized with reduced blur and will-change */}
           <motion.div
-            className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full filter blur-[100px]"
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full filter blur-[60px]"
             style={{
               willChange: 'transform',
               transform: 'translate3d(0, 0, 0)',
             }}
             animate={{
-              x: [0, 100, 0],
-              y: [0, 50, 0],
-              scale: [1, 1.2, 1],
+              x: [0, 80, 0],
+              y: [0, 40, 0],
+              scale: [1, 1.1, 1],
             }}
             transition={{
               duration: 20,
@@ -401,15 +412,15 @@ export default function Hero() {
             }}
           />
           <motion.div
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-pink/20 rounded-full filter blur-[100px]"
+            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-pink/20 rounded-full filter blur-[60px]"
             style={{
               willChange: 'transform',
               transform: 'translate3d(0, 0, 0)',
             }}
             animate={{
-              x: [0, -100, 0],
-              y: [0, -50, 0],
-              scale: [1, 1.3, 1],
+              x: [0, -80, 0],
+              y: [0, -40, 0],
+              scale: [1, 1.2, 1],
             }}
             transition={{
               duration: 25,
@@ -418,15 +429,15 @@ export default function Hero() {
             }}
           />
           <motion.div
-            className="absolute top-1/2 right-1/3 w-72 h-72 bg-gradient-purple/20 rounded-full filter blur-[80px]"
+            className="absolute top-1/2 right-1/3 w-72 h-72 bg-gradient-purple/20 rounded-full filter blur-[50px]"
             style={{
               willChange: 'transform',
               transform: 'translate3d(0, 0, 0)',
             }}
             animate={{
-              x: [0, 80, 0],
-              y: [0, -80, 0],
-              scale: [1, 1.1, 1],
+              x: [0, 60, 0],
+              y: [0, -60, 0],
+              scale: [1, 1.05, 1],
             }}
             transition={{
               duration: 18,
@@ -436,7 +447,7 @@ export default function Hero() {
           />
 
           {/* Floating particles - Reduced for performance */}
-          {[...Array(15)].map((_, i) => {
+          {[...Array(40)].map((_, i) => {
             const randomLeft = Math.random() * 100;
             const randomTop = Math.random() * 100;
             const randomDuration = 3 + Math.random() * 2;
@@ -451,11 +462,11 @@ export default function Hero() {
                   top: `${randomTop}%`,
                   willChange: 'transform, opacity',
                 }}
-                animate={{
-                  y: [0, -30, 0],
-                  opacity: [0.3, 0.8, 0.3],
-                  scale: [1, 1.5, 1],
-                }}
+                  animate={{
+                    y: [0, -50, 0],
+                    opacity: [0.2, 0.6, 0.2],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
                 transition={{
                   duration: randomDuration,
                   repeat: Infinity,

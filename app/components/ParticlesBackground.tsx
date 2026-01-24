@@ -32,7 +32,7 @@ export default function ParticlesBackground() {
     window.addEventListener('resize', resizeCanvas);
 
     // Create particles - Reduced count for performance
-    const particleCount = 100;
+    const particleCount = 200;
     const particles: Particle[] = [];
 
     for (let i = 0; i < particleCount; i++) {
@@ -75,13 +75,15 @@ export default function ParticlesBackground() {
           const p2 = particles[j];
           const dx = p1.x - p2.x;
           const dy = p1.y - p2.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distSq = dx * dx + dy * dy;
+          const maxDistSq = 180 * 180;
 
-          if (distance < 150) {
+          if (distSq < maxDistSq) {
+            const distance = Math.sqrt(distSq);
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - distance / 150)})`;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - distance / 180)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }

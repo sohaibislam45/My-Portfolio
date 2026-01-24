@@ -3,7 +3,7 @@ import { Project, Skill, Service, SocialLink, Education } from '@/types';
 export const personalInfo = {
   name: 'Shohaib Islam',
   designation: 'Full Stack Developer',
-  email: 'sohaibislam45@gmail.com',
+  email: 'sohaibislam303@gmail.com',
   phone: '01968017308',
   whatsapp: '01774667690',
 };
