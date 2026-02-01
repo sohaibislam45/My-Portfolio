@@ -158,7 +158,7 @@ export const projects: Project[] = [
     description: 'VehicleHub is a comprehensive vehicle management and rental platform designed to streamline the experience of listing, exploring, and booking vehicles.',
     briefDescription: 'VehicleHub serves as a bridge between vehicle owners and users looking for premium transportation solutions, offering a seamless, secure, and visually stunning experience.',
     image: '/images/projects/vehiclehub.png',
-    techStack: ['React', 'Node.js', 'Socket.io', 'PostgreSQL', 'AWS S3', 'JWT'],
+    techStack: ['React', 'Node.js', 'Next.js', 'Redux', 'MongoDB', 'TypeScript', 'Stripe'],
     liveLink: 'https://vehicle-hub-beta.vercel.app/',
     githubLink: 'https://github.com/sohaibislam45/VehicleHub',
     challenges: [
